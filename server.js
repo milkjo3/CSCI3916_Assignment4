@@ -112,17 +112,18 @@ router
             },
           },
         ]);
-        console.log(result);
-      }
 
-      // Find all movies
-      const movies = await Movie.find();
+        return res.status(200).json(result);
+      } else {
+        // Find all movies
+        const movies = await Movie.find();
 
-      // Return a 204 if no movies are found
-      if (movies.length === 0) {
-        return res.status(204).json();
+        // Return a 204 if no movies are found
+        if (movies.length === 0) {
+          return res.status(204).json();
+        }
+        return res.status(200).json(movies);
       }
-      return res.status(200).json(movies);
     } catch (err) {
       console.log(err);
       return res

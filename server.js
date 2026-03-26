@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const User = require("./Users");
 const Movie = require("./Movies"); // You're not using Movie, consider removing it
+const Review = require("./Reviews");
 const { Query } = require("mongoose");
 
 const app = express();

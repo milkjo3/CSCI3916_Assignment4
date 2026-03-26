@@ -99,6 +99,22 @@ router
   // Return list of all movies.
   .get(authJwtController.isAuthenticated, async (req, res) => {
     try {
+      // Requester wants reviews for each movie
+      if (req.query.reviews === "true") {
+        // Aggregate
+        const result = await Movie.aggregate([
+          {
+            $lookup: {
+              from: "reviews",
+              localField: "_id",
+              foreignField: "movieId",
+              as: "movieReviews",
+            },
+          },
+        ]);
+        console.log(result);
+      }
+
       // Find all movies
       const movies = await Movie.find();
 
@@ -172,20 +188,48 @@ router
   // Return movie based on title.
   .get(authJwtController.isAuthenticated, async (req, res) => {
     try {
-      // Find one movie based on titled
-      const movie = await Movie.findOne({ title: req.params.title });
+      if (req.query.reviews === "true") {
+        // Aggregate
+        const result = await Movie.aggregate([
+          {
+            $match: { title: req.params.title },
+          },
+          {
+            $lookup: {
+              from: "reviews",
+              localField: "_id",
+              foreignField: "movieId",
+              as: "movieReviews",
+            },
+          },
+        ]);
 
-      // Return 204 if none found
-      if (!movie) {
-        return res.status(204).json();
+        if (result.length === 0) {
+          return res.status(204).json();
+        }
+
+        // Return the movie
+        return res.status(200).json({
+          success: true,
+          message: "Successfully fetched movie.",
+          movie: result,
+        });
+      } else {
+        // Find one movie based on titled
+        const movie = await Movie.findOne({ title: req.params.title });
+
+        // Return 204 if none found
+        if (!movie) {
+          return res.status(204).json();
+        }
+
+        // Return the movie
+        return res.status(200).json({
+          success: true,
+          message: "Successfully fetched movie.",
+          movie: movie,
+        });
       }
-
-      // Return the movie
-      return res.status(200).json({
-        success: true,
-        message: "Successfully fetched movie.",
-        movie: movie,
-      });
     } catch (err) {
       console.log(err);
       return res

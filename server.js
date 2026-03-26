@@ -23,7 +23,7 @@ router.post("/signup", async (req, res) => {
   if (!req.body.username || !req.body.password) {
     return res.status(400).json({
       success: false,
-      msg: "Please include both username and password to signup.",
+      message: "Please include both username and password to signup.",
     }); // 400 Bad Request
   }
 
@@ -38,8 +38,8 @@ router.post("/signup", async (req, res) => {
     await user.save(); // Use await with user.save()
 
     res
-      .status(201)
-      .json({ success: true, msg: "Successfully created new user." }); // 201 Created
+      .status(200)
+      .json({ success: true, message: "Successfully created new user." }); // 200 Created
   } catch (err) {
     if (err.code === 11000) {
       // Strict equality check (===)
@@ -67,7 +67,7 @@ router.post("/signin", async (req, res) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        msg: "Authentication failed. User not found.",
+        message: "Authentication failed. User not found.",
       }); // 401 Unauthorized
     }
 
@@ -82,7 +82,7 @@ router.post("/signin", async (req, res) => {
     } else {
       res.status(401).json({
         success: false,
-        msg: "Authentication failed. Incorrect password.",
+        message: "Authentication failed. Incorrect password.",
       }); // 401 Unauthorized
     }
   } catch (err) {
@@ -122,7 +122,7 @@ router
       if (!req.body.title) {
         return res.status(400).json({
           success: false,
-          msg: "Cannot POST movie, missing required field: title",
+          message: "Cannot POST movie, missing required field: title",
         }); // 400 Bad Request
       }
 
@@ -140,9 +140,9 @@ router
 
       // Save the movie to the database
       await movie.save();
-      res.status(201).json({
+      res.status(200).json({
         success: true,
-        msg: "Successfully created new movie.",
+        message: "Successfully created new movie.",
         movie: movie,
       });
     } catch (err) {
@@ -308,11 +308,11 @@ router
       if (!req.body.movieId) {
         return res.status(400).json({
           success: false,
-          msg: "Cannot POST review, missing required field: movieId",
+          message: "Cannot POST review, missing required field: movieId",
         }); // 400 Bad Request
       }
 
-      const movie = await Movie.findById(req.params.movieId);
+      const movie = await Movie.findById(req.body.movieId);
       if (!movie) {
         return res.status(400).json({
           success: false,
@@ -332,7 +332,7 @@ router
 
       // Save the movie to the database
       await review.save();
-      res.status(201).json({ success: true, msg: "Review created!" });
+      res.status(200).json({ success: true, message: "Review created!" });
     } catch (err) {
       console.log(err);
       return res

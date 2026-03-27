@@ -1,67 +1,29 @@
-# Assignment Four
-## Purpose
-The purpose of this assignment is to leverage Google’s analytics policies to gather information about the requests being sent in by users.
+### Run in Postman Link
 
-Using the information already entered to MongoDB for the previous assignment, you will add another collection of reviews that are tied to the movies. This way users can query the database and get the previous information (title, year released and actors) as well as the reviews. These two entities should remain separate! Do not append the reviews to the existing movie information.  
+---
 
-Leverage the Async.js library or mongo $lookup aggregation capability to join the entities.
+[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/51754696-29692622-e022-486c-82de-ce3477e0480a?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D51754696-29692622-e022-486c-82de-ce3477e0480a%26entityType%3Dcollection%26workspaceId%3Df66d949a-9ff9-4f9f-8f62-38f97d6ac87f#?env%5BMilliken%20-%20HW4%5D=W3sia2V5IjoibmFtZSIsInZhbHVlIjoiIiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQiLCJzZXNzaW9uVmFsdWUiOiJKb3NlcGggTWlsbGlrZW4iLCJjb21wbGV0ZVNlc3Npb25WYWx1ZSI6Ikpvc2VwaCBNaWxsaWtlbiIsInNlc3Npb25JbmRleCI6MH0seyJrZXkiOiJ1c2VybmFtZSIsInZhbHVlIjoiIiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQiLCJzZXNzaW9uVmFsdWUiOiJqb2VAZ21haWwuY28iLCJjb21wbGV0ZVNlc3Npb25WYWx1ZSI6ImpvZUBnbWFpbC5jbyIsInNlc3Npb25JbmRleCI6MX0seyJrZXkiOiJwYXNzd29yZCIsInZhbHVlIjoiIiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQiLCJzZXNzaW9uVmFsdWUiOiJwYXNzd29yZCIsImNvbXBsZXRlU2Vzc2lvblZhbHVlIjoicGFzc3dvcmQiLCJzZXNzaW9uSW5kZXgiOjJ9LHsia2V5IjoiSldUIHRva2VuIiwidmFsdWUiOiIiLCJlbmFibGVkIjp0cnVlLCJ0eXBlIjoiYW55Iiwic2Vzc2lvblZhbHVlIjoiSldULi4uIiwiY29tcGxldGVTZXNzaW9uVmFsdWUiOiJKV1QgZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBaQ0k2SWpZNVlqUTBPRFEyWWpSaE9EUmtZV1JqWkRVNVl6TXdNU0lzSW5WelpYSnVZVzFsSWpvaWFtOWxRR2R0WVdsc0xtTnZJaXdpYVdGMElqb3hOemMwTmpNMk1ETXlMQ0psZUhBaU9qRTNOelEyTXprMk16SjkuOVhvY2luNlE5b19yeGI0dUJMNmlHeUk2bU1UdnlFTm9RRjVPRzBzc0dVayIsInNlc3Npb25JbmRleCI6M30seyJrZXkiOiJtb3ZpZV90aXRsZSIsInZhbHVlIjoiIiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQiLCJzZXNzaW9uVmFsdWUiOiJUaGUgTG9yZCBvZiB0aGUgUmluZ3M6IFRoZSBGZWxsb3dzaGlwIG9mIHRoZSBSaW5nIiwiY29tcGxldGVTZXNzaW9uVmFsdWUiOiJUaGUgTG9yZCBvZiB0aGUgUmluZ3M6IFRoZSBGZWxsb3dzaGlwIG9mIHRoZSBSaW5nIiwic2Vzc2lvbkluZGV4Ijo0fSx7ImtleSI6Im1vdmllX2lkIiwidmFsdWUiOiIiLCJlbmFibGVkIjp0cnVlLCJ0eXBlIjoiZGVmYXVsdCIsInNlc3Npb25WYWx1ZSI6IjY5YzZjNDg4ZTU4MWM3MDAzZTU2NDY1MSIsImNvbXBsZXRlU2Vzc2lvblZhbHVlIjoiNjljNmM0ODhlNTgxYzcwMDNlNTY0NjUxIiwic2Vzc2lvbkluZGV4Ijo1fSx7ImtleSI6InJldmlldyIsInZhbHVlIjoiIiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQiLCJzZXNzaW9uVmFsdWUiOiJUaGUgTG9yZCBvZiB0aGUgUmluZ3M6IFRoZSBGZWxsb3dzaGlwIG9mIHRoZSBSaW5nIGlzIGFuIGVwaWMgZmFudGFzeSBhZHZlbnR1cmUgdGhhdCBtYXN0ZXJmdWxseSBibGVuZHMgYnJlYXRodGFraW5nIHdvcmxkLWJ1aWxkaW5nIHdpdGguLi4iLCJjb21wbGV0ZVNlc3Npb25WYWx1ZSI6IlRoZSBMb3JkIG9mIHRoZSBSaW5nczogVGhlIEZlbGxvd3NoaXAgb2YgdGhlIFJpbmcgaXMgYW4gZXBpYyBmYW50YXN5IGFkdmVudHVyZSB0aGF0IG1hc3RlcmZ1bGx5IGJsZW5kcyBicmVhdGh0YWtpbmcgd29ybGQtYnVpbGRpbmcgd2l0aCBlbW90aW9uYWxseSBncm91bmRlZCBjaGFyYWN0ZXJzLiBJdHMgc3dlZXBpbmcgdmlzdWFscyBhbmQgY29tcGVsbGluZyBzdG9yeXRlbGxpbmcgc2V0IGEgZ29sZCBzdGFuZGFyZCBmb3IgbW9kZXJuIGJsb2NrYnVzdGVyIGZpbG1tYWtpbmcuIiwic2Vzc2lvbkluZGV4Ijo2fSx7ImtleSI6ImZha2VfbW92aWVfaWQiLCJ2YWx1ZSI6IiIsImVuYWJsZWQiOnRydWUsInR5cGUiOiJkZWZhdWx0Iiwic2Vzc2lvblZhbHVlIjoiNjliNDQ4NDZiNGE4NGRhZGNkNTljMzAxIiwiY29tcGxldGVTZXNzaW9uVmFsdWUiOiI2OWI0NDg0NmI0YTg0ZGFkY2Q1OWMzMDEiLCJzZXNzaW9uSW5kZXgiOjd9LHsia2V5IjoiZmFrZV91c2VybmFtZSIsInZhbHVlIjoiIiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQiLCJzZXNzaW9uVmFsdWUiOiJkcmFnb25fbWFzdGVyNDIwIiwiY29tcGxldGVTZXNzaW9uVmFsdWUiOiJkcmFnb25fbWFzdGVyNDIwIiwic2Vzc2lvbkluZGV4Ijo4fSx7ImtleSI6ImZha2VfcGFzc3dvcmQiLCJ2YWx1ZSI6ImZha2VfcGFzc3dvcmQiLCJlbmFibGVkIjp0cnVlLCJ0eXBlIjoiZGVmYXVsdCIsInNlc3Npb25WYWx1ZSI6ImZha2VfcGFzc3dvcmQiLCJjb21wbGV0ZVNlc3Npb25WYWx1ZSI6ImZha2VfcGFzc3dvcmQiLCJzZXNzaW9uSW5kZXgiOjl9LHsia2V5IjoiZmFrZV9yZXZpZXciLCJ2YWx1ZSI6IiIsImVuYWJsZWQiOnRydWUsInR5cGUiOiJkZWZhdWx0Iiwic2Vzc2lvblZhbHVlIjoiVGhpcyBtb3ZpZSB3YXMgZ29vZCwgYnV0IEkgZG9uJ3QgcXVpdGUgcmVtZW1iZXIgd2hhdCBpdCB3YXMgYWJvdXQuLi4iLCJjb21wbGV0ZVNlc3Npb25WYWx1ZSI6IlRoaXMgbW92aWUgd2FzIGdvb2QsIGJ1dCBJIGRvbid0IHF1aXRlIHJlbWVtYmVyIHdoYXQgaXQgd2FzIGFib3V0Li4uIiwic2Vzc2lvbkluZGV4IjoxMH0seyJrZXkiOiJ0aXRsZSIsInZhbHVlIjoiTmVvbiBTa2llcyIsImVuYWJsZWQiOnRydWUsInR5cGUiOiJkZWZhdWx0Iiwic2Vzc2lvblZhbHVlIjoiTmVvbiBTa2llcyIsImNvbXBsZXRlU2Vzc2lvblZhbHVlIjoiTmVvbiBTa2llcyIsInNlc3Npb25JbmRleCI6MTF9LHsia2V5IjoidGl0bGVfZG5lIiwidmFsdWUiOiJCYXRtYW4iLCJlbmFibGVkIjp0cnVlLCJ0eXBlIjoiZGVmYXVsdCIsInNlc3Npb25WYWx1ZSI6IkJhdG1hbiIsImNvbXBsZXRlU2Vzc2lvblZhbHVlIjoiQmF0bWFuIiwic2Vzc2lvbkluZGV4IjoxMn0seyJrZXkiOiJ0aXRsZV90d28iLCJ2YWx1ZSI6IlRoZSBMYXVnaGluZyBQYXJhZG94IiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQiLCJzZXNzaW9uVmFsdWUiOiJUaGUgTGF1Z2hpbmcgUGFyYWRveCIsImNvbXBsZXRlU2Vzc2lvblZhbHVlIjoiVGhlIExhdWdoaW5nIFBhcmFkb3giLCJzZXNzaW9uSW5kZXgiOjEzfSx7ImtleSI6InJhbmRvbV91c2VyIiwidmFsdWUiOiJtajIzQGdtYWlsLmNvIiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQiLCJzZXNzaW9uVmFsdWUiOiJOb25hMjkiLCJjb21wbGV0ZVNlc3Npb25WYWx1ZSI6Ik5vbmEyOSIsInNlc3Npb25JbmRleCI6MTR9LHsia2V5IjoicmFuZG9tX25hbWUiLCJ2YWx1ZSI6Ik1pY2hhZWwgSm9yZGFuIiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQiLCJzZXNzaW9uVmFsdWUiOiJLYWlseW4iLCJjb21wbGV0ZVNlc3Npb25WYWx1ZSI6IkthaWx5biIsInNlc3Npb25JbmRleCI6MTV9LHsia2V5IjoicmFuZG9tX3Bhc3MiLCJ2YWx1ZSI6InBhc3N3b3JkIiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQiLCJzZXNzaW9uVmFsdWUiOiJwYXNzd29yZCIsImNvbXBsZXRlU2Vzc2lvblZhbHVlIjoicGFzc3dvcmQiLCJzZXNzaW9uSW5kZXgiOjE2fV0=)
 
+### Explanation of your project
 
-## Requirements
-- Create a collection in MongoDB (Mongo Atlas) to hold reviews about existing movies.
-    - A review contains the name of the reviewer, a small quote about what they thought about the movie, and their rating out of five stars.
-        - movieId (from the movie collection)
-        - username
-        - review
-        - rating
-    - The review collection should have at least one review for each movie. – The review can be a simple, ficticious review that you create.
-- This API should build upon the previous API in assignment three.
-    - If the user sends a response with the query parameter reviews=true, then the response should include the movie information as well as all the reviews for the movie. If they do not pass this in, the response should not show the reviews. – The review information should be appended to the response to the user.
-        - Hint: Look at $lookup on how to aggregate two collections
-    - Implement GET/POST (DELETE is optional for reviews)
-        - POST needs to be secured with a JWT authorization token.  The Username in the token should be stored with the review (indicating the user that submitted the review)
-            - If review created send back JSON message { message: 'Review created!' } 
-- Extra Credit:  Add custom analytics to return information about which movies users are querying.
-    - Create a custom analytics policy that describes the number of times each movie has been reviewed. To do this, you will have to send a number of requests for each movie.
-        - Custom Dimension: Movie Name
-        - Custom Metric: Requested:  Value 1 (it will aggregate)
-    - Custom Dimension and Metric should be sent with an Event type 
-        - Event Category: Genre of Movie (e.g. Western)
-        - Event Action: Url Path (e.g. post /reviews)
-        - Event Label: API Request for Movie Review
-        - Event Value: 1 
+---
 
+This project adds on to the previous project in assignment three. The previous project implemented a Movies and User collections for you to log in and upload movies to a review website. Here we add on to the project by introducing a Reviews collection, to enable us to create and view reviews for specific movies. The Postman collection of requests demonstrates the functionality.
 
-## Submissions
-- Create a Postman test to test your API. You should include the following requests.
-    - All tests from HW3 and
-    - Valid request without the review query parameter (e.g reviews=true on the /movies route)
-    - Invalid request (for a movie not in the database) without the review query parameter. 
-    - Valid request with the review query parameter. (e.g reviews=true on the /movies/:id route)
-    - Valid save review method that associates a review with a movie (save a review for a movie in your DB)
-    - Invalid save review (movie missing from DB)
-    - Export a report from Google Analytics (only if you do the Extra Credit)
+### Installation and usage instructions
 
-- Create a readme.md at the root of your github repository with the embedded (markdown) to your test collection
-    - Within the collection click the (…), share collection -> Embed
-    - Static Button
-    - Click update link
-    - Include your environment settings
-    - Copy to clipboard 
-- Submit the Url to canvas with the REPO CSC_3916
-- Note: All tests should be testing against your Heroku or Render endpoint
+---
 
-## Rubic
-- This one has an extra credit – code the custom analytics that correctly sends the movie name and they attach a PDF or Excel report from Google Analytics you receive +4
-- -2 if missing reviews collection
-- -2 if missing query parameters ?reviews=true that returns reviews (should include both movie and reviews)
-- -1 for each test that is missing (valid request for movie with query parameter, valid save review, invalid movie request, invalid save review) – for max of (-4 for missing all tests)
-- -2 if you have to manually copy the JWT token to get their tests to run (versus saving it from the sign-in call)
-- Try changing the review data to enter a different review before submitting to validate new review are returned – if not (-1)
+Click the link above to the Postman test collection. Run the test collection using the provided environment. No need to install any software as the Postman tests target the render endpoint: https://assignment-4-4z8a.onrender.com
 
-## Resources
-- https://github.com/daxko/universal-ga
-- https://developers.google.com/analytics/devguides/collection/analyticsjs/custom-dims-mets 
-- https://cloud.google.com/appengine/docs/flexible/nodejs/integrating-with-analytics
-- https://caolan.github.io/async/index.html
-- https://support.google.com/analytics/answer/2709829
+### Link to your Postman test collection
+
+---
+
+The button above is the link to the Postman collection.
+
+### The environment settings
+
+---
+
+The environment variables are provided within the Postman collection.

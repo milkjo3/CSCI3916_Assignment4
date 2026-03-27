@@ -266,19 +266,14 @@ router
         { title: req.params.title },
         { $set: req.body },
       );
-      if (resource.modifiedCount === 1) {
-        return res.status(200).json({
-          success: true,
-          message: "Resource updated successfully.",
-          resource: `${req.params.title}`,
-        });
-      } else {
-        return res.status(500).json({
-          success: false,
-          message: "Resource could not be updated.",
-          resource: `${req.params.title}`,
-        });
-      }
+      return res.status(200).json({
+        success: true,
+        message:
+          resource.modifiedCount === 1
+            ? "Resource updated successfully."
+            : "No changes were needed, resource was already up to data.",
+        resource: `${req.params.title}`,
+      });
     } catch (err) {
       console.log(err);
       return res
